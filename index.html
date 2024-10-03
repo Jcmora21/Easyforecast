@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyForecast</title>
+    <style>
+        /* Estilos gerais */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e; /* Preto suave para o fundo */
+            color: #ffffff; /* Texto branco */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* Cabeçalho */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #f1f1f1; /* Cinza claro */
+        }
+
+        /* Caixa de pesquisa */
+        .search-box {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        #city-input {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #444;
+            background-color: #333; /* Cinza escuro para o input */
+            color: #fff;
+            width: 300px;
+        }
+
+        #search-btn {
+            padding: 10px 20px;
+            background-color: #444; /* Cinza médio para o botão */
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        #search-btn:hover {
+            background-color: #555; /* Cinza mais claro no hover */
+        }
+
+        /* Exibição da previsão do tempo */
+        #weather-display {
+            text-align: center;
+            background-color: #292929; /* Fundo escuro para a área de previsão */
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Previsão do Tempo</h1>
+        <div class="search-box">
+            <input type="text" id="city-input" placeholder="Digite o nome da cidade">
+            <button id="search-btn">Buscar</button>
+        </div>
+    </header>
+
+    <section id="weather-display">
+        <h2 id="city-name">Cidade</h2>
+        <p id="temperature">Temperatura: --°C</p>
+        <p id="weather-description">Condição: --</p>
+        <p id="rain-probability">Probabilidade de Chuva: --%</p>
+        <p id="wind-speed">Velocidade do Vento: -- km/h</p>
+        <p id="humidity">Umidade Relativa: --%</p>
+        <p id="cloudiness">Nubelosidade: --%</p>
+    </section>
+
+    <script>
+        // Espera que o conteúdo da página seja carregado
+        document.addEventListener("DOMContentLoaded", function() {
+            const apiKey = 'e9a57d846568ca0221d7b3ad8f21d67e'; // Substitua pela sua chave da API
+            const searchBtn = document.getElementById('search-btn');
+            const cityInput = document.getElementById('city-input');
+            const cityName = document.getElementById('city-name');
+            const temperature = document.getElementById('temperature');
+            const weatherDescription = document.getElementById('weather-description');
+            const rainProbability = document.getElementById('rain-probability');
+            const windSpeed = document.getElementById('wind-speed');
+            const humidity = document.getElementById('humidity');
+            const cloudiness = document.getElementById('cloudiness');
+
+            // Função para converter a direção do vento em pontos cardeais
+            function getWindDirection(degree) {
+                const directions = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+                return directions[Math.round(((degree % 360) / 45)) % 8];
+            }
+
+            // Função para buscar a previsão do tempo
+            function fetchWeather(city) {
+                const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=pt_br`;
+
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Atualiza o conteúdo na página com os dados da API
+                        cityName.textContent = data.name;
+                        temperature.textContent = `Temperatura: ${data.main.temp}°C`;
+                        weatherDescription.textContent = `Condição: ${data.weather[0].description}`;
+                        rainProbability.textContent = `Probabilidade de Chuva: ${data.rain ? data.rain['1h'] || 0 : 0}%`;
+                        windSpeed.textContent = `Velocidade do Vento: ${data.wind.speed} km/h (${getWindDirection(data.wind.deg)})`;
+                        humidity.textContent = `Umidade Relativa: ${data.main.humidity}%`;
+                        cloudiness.textContent = `Nubelosidade: ${data.clouds.all}%`;
+                    })
+                    .catch(error => {
+                        alert('Erro ao buscar a previsão. Verifique o nome da cidade e tente novamente.');
+                        console.error('Erro:', error);
+                    });
+            }
+
+            // Adiciona o evento de clique ao botão de busca
+            searchBtn.addEventListener('click', function() {
+                const city = cityInput.value;
+                if (city) {
+                    fetchWeather(city);
+                } else {
+                    alert('Por favor, digite o nome de uma cidade.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

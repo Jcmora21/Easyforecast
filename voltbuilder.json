@@ -1,0 +1,22 @@
+{
+    "app": "EasyForecast",
+    "package": "com.yourcompany.easyforecast",
+    "version": "1.0.0",
+    "platforms": [
+      "android"
+    ],
+    "plugins": [
+      "cordova-plugin-whitelist",
+      "cordova-plugin-splashscreen",
+      "cordova-plugin-statusbar"
+    ],
+    "android": {
+      "minSdkVersion": 22,
+      "targetSdkVersion": 33,
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    }
+  }
+  
